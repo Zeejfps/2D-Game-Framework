@@ -17,6 +17,10 @@ public abstract class Scene {
         onUpdate(game);
     }
 
+    final void fixedUpdate(Game game) {
+        onFixedUpdate(game);
+    }
+
     final void render(Game game) {
         onRender(game);
     }
@@ -30,6 +34,8 @@ public abstract class Scene {
     public abstract void onStart(Game game);
 
     public abstract void onUpdate(Game game);
+
+    public abstract void onFixedUpdate(Game game);
 
     public abstract void onRender(Game game);
 

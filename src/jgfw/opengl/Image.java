@@ -1,4 +1,4 @@
-package jgfw;
+package jgfw.opengl;
 
 import jgfw.utils.IOUtils;
 import org.lwjgl.stb.STBImage;

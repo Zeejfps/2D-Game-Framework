@@ -7,8 +7,8 @@ import jgfw.enums.Cursor;
  */
 public final class Config {
 
-    protected boolean vSync = false;
-    protected boolean fullscreen = false;
+    protected float fixedUpdateInterval = 30;
+    protected boolean vSync = false, fullscreen = false;
     protected int windowWidth = 640, windowHeight = 480;
     protected String windowTitle = "Untitled Game";
     protected int inputMode = Cursor.NORMAL.mode;
@@ -32,6 +32,10 @@ public final class Config {
 
     public void enableVSync(boolean enable) {
         this.vSync = enable;
+    }
+
+    public void setFixedUpdateInterval(float interval) {
+        this.fixedUpdateInterval = interval;
     }
 
 }

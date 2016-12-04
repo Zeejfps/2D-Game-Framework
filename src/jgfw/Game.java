@@ -12,13 +12,20 @@ import static org.lwjgl.system.MemoryUtil.*;
  */
 public final class Game {
 
+    private static final int MAX_FRAME_SKIP = 5;
+
     public final Screen screen;
     public final Input input;
+    public final Time time;
 
     private long window;
     private boolean running;
+    private double nsPerUpdate;
 
     public Game(Config config) {
+        nsPerUpdate = (double)Time.NS_IN_SEC / config.fixedUpdateInterval;
+        System.out.println(nsPerUpdate);
+        time = new Time();
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {
@@ -77,8 +84,20 @@ public final class Game {
         running = true;
         scene.load();
         scene.start(this);
+        long startTime = System.nanoTime();
+        long accumulator = 0;
         while(running && !glfwWindowShouldClose(window)){
+            long elapsed = System.nanoTime() - startTime;
+            accumulator += elapsed;
+            time.setDeltaTime((float)elapsed / Time.NS_IN_SEC);
+            int framesSkipped = 0;
+            startTime = System.nanoTime();
             glfwPollEvents();
+            while (accumulator > nsPerUpdate && framesSkipped < MAX_FRAME_SKIP) {
+                scene.fixedUpdate(this);
+                accumulator -= nsPerUpdate;
+                framesSkipped ++;
+            }
             scene.update(this);
             scene.render(this);
             glfwSwapBuffers(window);
