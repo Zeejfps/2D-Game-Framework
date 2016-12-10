@@ -10,7 +10,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 /**
  * Created by zeejfps on 11/16/16.
  */
-public final class Game {
+public abstract class Game {
 
     private static final int MAX_FRAME_SKIP = 5;
 
@@ -23,11 +23,10 @@ public final class Game {
     private double nsPerUpdate;
 
     public Game(Config config) {
-        nsPerUpdate = (double)Time.NS_IN_SEC / config.fixedUpdateInterval;
-        System.out.println(nsPerUpdate);
+        nsPerUpdate = (double)Time.NS_PER_SEC / config.fixedUpdateInterval;
         time = new Time();
-        GLFWErrorCallback.createPrint(System.err).set();
 
+        GLFWErrorCallback.createPrint(System.err).set();
         if (!glfwInit()) {
             throw new IllegalStateException("Failed to initialize glfw");
         }
@@ -75,39 +74,55 @@ public final class Game {
 
         glfwMakeContextCurrent(window);
         glfwSwapInterval(config.vSync ? 1 : 0);
-        glfwShowWindow(window);
         GL.createCapabilities();
     }
 
-    public void launch(Scene scene) {
-        if (running) return;
+    public final void launch() {
+
+        if (running)
+            return;
+
         running = true;
-        scene.load();
-        scene.start(this);
+        glfwShowWindow(window);
+        onLaunch();
         long startTime = System.nanoTime();
         long accumulator = 0;
+        long elapsed;
         while(running && !glfwWindowShouldClose(window)){
-            long elapsed = System.nanoTime() - startTime;
+            elapsed = System.nanoTime() - startTime;
             accumulator += elapsed;
-            time.setDeltaTime((float)elapsed / Time.NS_IN_SEC);
+            time.setDeltaTime((float)elapsed / Time.NS_PER_SEC);
             int framesSkipped = 0;
             startTime = System.nanoTime();
+            input.update();
+            screen.update();
             glfwPollEvents();
             while (accumulator > nsPerUpdate && framesSkipped < MAX_FRAME_SKIP) {
-                scene.fixedUpdate(this);
+                onFixedUpdate();
                 accumulator -= nsPerUpdate;
                 framesSkipped ++;
             }
-            scene.update(this);
-            scene.render(this);
+            onUpdate();
+            onRender();
             glfwSwapBuffers(window);
         }
-        scene.unload();
+        onExit();
         glfwDestroyWindow(window);
         glfwTerminate();
     }
 
-    public void exit() {
+    public final void exit() {
         running = false;
     }
+
+    protected abstract void onLaunch();
+
+    protected abstract void onUpdate();
+
+    protected abstract void onFixedUpdate();
+
+    protected abstract void onRender();
+
+    protected abstract void onExit();
+
 }

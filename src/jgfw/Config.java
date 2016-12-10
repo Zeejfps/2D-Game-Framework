@@ -26,8 +26,8 @@ public final class Config {
         this.fullscreen = fullscreen;
     }
 
-    public void setCursorMode(Cursor cursorMode) {
-        this.inputMode = cursorMode.mode;
+    public void setCursor(Cursor cursor) {
+        this.inputMode = cursor.mode;
     }
 
     public void enableVSync(boolean enable) {
