@@ -19,8 +19,8 @@ public abstract class Game {
     public final Time time;
 
     private long window;
-    private boolean running;
     private double nsPerUpdate;
+    private volatile boolean running;
 
     public Game(Config config) {
         nsPerUpdate = (double)Time.NS_PER_SEC / config.fixedUpdateInterval;
@@ -77,6 +77,9 @@ public abstract class Game {
         GL.createCapabilities();
     }
 
+    /**
+     * Displays the window and begins execution of the game.
+     */
     public final void launch() {
 
         if (running)
@@ -111,18 +114,39 @@ public abstract class Game {
         glfwTerminate();
     }
 
+    /**
+     * Sets the running flag to false which will terminate the execution of the game.
+     */
     public final void exit() {
         running = false;
     }
 
+    /**
+     * This method is called after the launch method is called,
+     * right before entering the main game loop and after the
+     * window has been displayed.
+     */
     protected abstract void onLaunch();
 
+    /**
+     * This method is called every frame before the onRender() method.
+     */
     protected abstract void onUpdate();
 
+    /**
+     * This method will always be called at a specified frame rate.
+     */
     protected abstract void onFixedUpdate();
 
+    /**
+     * This method is called every frame after the onUpdate() method.
+     */
     protected abstract void onRender();
 
+    /**
+     * This method is called once the game has exited its main loop
+     * and before the game fully terminates.
+     */
     protected abstract void onExit();
 
 }
