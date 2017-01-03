@@ -1,5 +1,7 @@
 package jgfw;
 
+import org.lwjgl.opengl.GL11;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -14,6 +16,9 @@ public final class Screen {
         this.window = window;
         this.width = new int[1];
         this.height = new int[1];
+        glfwSetWindowSizeCallback(window, (l, w, h) -> {
+            GL11.glViewport(0, 0, w, h);
+        });
     }
 
     void update() {
