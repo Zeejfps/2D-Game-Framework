@@ -1,19 +1,15 @@
+import jgfw.App;
 import jgfw.Config;
-import jgfw.Game;
 import jgfw.enums.Cursor;
 import jgfw.enums.Key;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL11;
-
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 
 /**
  * Created by zeejfps on 11/16/16.
  */
-public class TestGame extends Game {
+public class TestApp extends App {
 
-    public TestGame(Config config) {
+    public TestApp(Config config) {
         super(config);
     }
 
@@ -50,7 +46,7 @@ public class TestGame extends Game {
         fixedUpdates++;
         if (System.currentTimeMillis() - startTime > 1000) {
             //System.out.println("Fixed Updates: " + fixedUpdates);
-            System.out.println(time.deltaTime());
+            //System.out.println(time.deltaTime());
             fixedUpdates = 0;
             startTime = System.currentTimeMillis();
         }
@@ -68,13 +64,13 @@ public class TestGame extends Game {
 
     public static void main(String[] args) {
         Config config = new Config();
-        config.setWindowTitle("Test Game");
+        config.setWindowTitle("Test App");
         config.enableVSync(true);
         config.setCursor(Cursor.NORMAL);
         config.setWindowSize(640, 480);
-        config.setFullscreen(false);
+        config.setFullscreen(true);
         config.setCursor(Cursor.DISABLED);
-        Game game = new TestGame(config);
-        game.launch();
+        App app = new TestApp(config);
+        app.launch();
     }
 }

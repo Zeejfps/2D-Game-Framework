@@ -10,7 +10,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 /**
  * Created by zeejfps on 11/16/16.
  */
-public abstract class Game {
+public class App {
 
     private static final int MAX_FRAME_SKIP = 5;
 
@@ -21,8 +21,9 @@ public abstract class Game {
     private long window;
     private double nsPerUpdate;
     private volatile boolean running;
+    private Scene currentScene;
 
-    public Game(Config config) {
+    public App(Config config) {
         nsPerUpdate = (double)Time.NS_PER_SEC / config.fixedUpdateInterval;
         time = new Time();
 
@@ -80,14 +81,14 @@ public abstract class Game {
     /**
      * Displays the window and begins execution of the game.
      */
-    public final void launch() {
+    public final void launch(Scene scene) {
 
         if (running)
             return;
 
         running = true;
         glfwShowWindow(window);
-        onLaunch();
+        switchScenes(scene);
         long startTime = System.nanoTime();
         long accumulator = 0;
         long elapsed;
@@ -101,15 +102,15 @@ public abstract class Game {
             screen.update();
             glfwPollEvents();
             while (accumulator > nsPerUpdate && framesSkipped < MAX_FRAME_SKIP) {
-                onFixedUpdate();
+                scene.fixedUpdate();
                 accumulator -= nsPerUpdate;
                 framesSkipped ++;
             }
-            onUpdate();
-            onRender();
+            currentScene.update();
+            currentScene.render();
             glfwSwapBuffers(window);
         }
-        onExit();
+        currentScene.unload();
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -121,32 +122,16 @@ public abstract class Game {
         running = false;
     }
 
-    /**
-     * This method is called after the launch method is called,
-     * right before entering the main game loop and after the
-     * window has been displayed.
-     */
-    protected abstract void onLaunch();
+    public void switchScenes(Scene scene) {
+        if (currentScene != null) {
+            currentScene.unload();
+        }
+        currentScene = scene;
+        currentScene.load();
+    }
 
-    /**
-     * This method is called every frame before the onRender() method.
-     */
-    protected abstract void onUpdate();
-
-    /**
-     * This method will always be called at a specified frame rate.
-     */
-    protected abstract void onFixedUpdate();
-
-    /**
-     * This method is called every frame after the onUpdate() method.
-     */
-    protected abstract void onRender();
-
-    /**
-     * This method is called once the game has exited its main loop
-     * and before the game fully terminates.
-     */
-    protected abstract void onExit();
+    public void setWindowTitle(String title) {
+        glfwSetWindowTitle(window, title);
+    }
 
 }

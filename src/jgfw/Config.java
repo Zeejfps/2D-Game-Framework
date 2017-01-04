@@ -10,7 +10,7 @@ public final class Config {
     protected float fixedUpdateInterval = 30;
     protected boolean vSync = false, fullscreen = false;
     protected int windowWidth = 640, windowHeight = 480;
-    protected String windowTitle = "Untitled Game";
+    protected String windowTitle = "Untitled App";
     protected int inputMode = Cursor.NORMAL.mode;
 
     public void setWindowTitle(String title) {
